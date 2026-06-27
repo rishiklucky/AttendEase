@@ -1,0 +1,458 @@
+/* Import Google Font Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-background: #faf8ff;
+  --color-surface: #ffffff;
+  --color-surface-container-low: #f2f3ff;
+  --color-surface-container: #ecedf9;
+  --color-surface-container-high: #e6e7f3;
+  --color-primary: #0057cd;
+  --color-primary-hover: #00419e;
+  --color-text-main: #191b24;
+  --color-text-muted: #6c757d;
+  --color-outline: #c2c6d8;
+  
+  /* Semantic Statuses */
+  --color-present-bg: #e2f9e9;
+  --color-present-text: #1b7a37;
+  --color-absent-bg: #ffebe9;
+  --color-absent-text: #c5221f;
+  --color-late-bg: #fff3cd;
+  --color-late-text: #856404;
+  
+  /* Layout */
+  --sidebar-width: 240px;
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* App Layout Grid */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar Styling */
+.app-sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--color-surface-container-low);
+  border-right: 1px solid var(--color-outline);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.app-sidebar-logo {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--color-surface-container-high);
+}
+
+.app-sidebar-menu {
+  flex: 1;
+  padding: 16px 12px;
+  list-style: none;
+  margin: 0;
+}
+
+.app-sidebar-item {
+  margin-bottom: 4px;
+}
+
+.app-sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  color: var(--color-text-main);
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.app-sidebar-link i {
+  font-size: 18px;
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+}
+
+.app-sidebar-link:hover {
+  background-color: var(--color-surface-container);
+  color: var(--color-primary);
+}
+
+.app-sidebar-link.active {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+/* Main Content Area */
+.app-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: 24px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Responsive Sidebar for Mobile */
+@media (max-width: 768px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+  }
+  .app-sidebar.show {
+    transform: translateX(0);
+  }
+  .app-content {
+    margin-left: 0;
+    padding: 16px;
+    padding-top: 70px; /* Space for top mobile navbar */
+  }
+  .mobile-header {
+    display: flex !important;
+  }
+}
+
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-outline);
+  align-items: center;
+  padding: 0 16px;
+  z-index: 1010;
+  justify-content: space-between;
+}
+
+/* Custom Cards */
+.card-custom {
+  background-color: var(--color-surface);
+  border-radius: 8px;
+  border: 1px solid var(--color-outline);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 20px;
+  margin-bottom: 24px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-custom:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-color: var(--color-surface-container-high);
+}
+
+/* Stats Cards */
+.stat-card {
+  padding: 16px 20px;
+}
+.stat-card-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+.stat-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  line-height: 1.2;
+}
+
+/* Custom Tables */
+.table-custom-container {
+  overflow-x: auto;
+  border: 1px solid var(--color-outline);
+  border-radius: 8px;
+  background-color: var(--color-surface);
+  margin-bottom: 24px;
+}
+
+.table-custom {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+}
+
+.table-custom th {
+  background-color: var(--color-surface-container-low);
+  color: var(--color-text-main);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-outline);
+  text-align: left;
+}
+
+.table-custom td {
+  padding: 14px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--color-surface-container-high);
+  vertical-align: middle;
+}
+
+.table-custom tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-custom tbody tr:hover {
+  background-color: var(--color-surface-container-low);
+}
+
+/* Buttons Styling */
+.btn-primary-custom {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary-custom:hover, .btn-primary-custom:focus {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #ffffff;
+}
+
+.btn-secondary-custom {
+  background-color: transparent;
+  border-color: var(--color-outline);
+  color: var(--color-text-main);
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-custom:hover {
+  background-color: var(--color-surface-container-low);
+  color: var(--color-primary);
+}
+
+/* Custom Toggle Switch for Attendance */
+.attendance-switch {
+  position: relative;
+  display: inline-block;
+  width: 110px;
+  height: 34px;
+}
+
+.attendance-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.attendance-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-absent-bg);
+  border: 1px solid #f5c2c2;
+  transition: .3s;
+  border-radius: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+}
+
+.attendance-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 3px;
+  background-color: #ffffff;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  z-index: 2;
+}
+
+.attendance-slider .text-present {
+  color: var(--color-present-text);
+  font-weight: 700;
+  font-size: 11px;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.attendance-slider .text-absent {
+  color: var(--color-absent-text);
+  font-weight: 700;
+  font-size: 11px;
+  margin-right: auto;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+input:checked + .attendance-slider {
+  background-color: var(--color-present-bg);
+  border-color: #c3e6cb;
+}
+
+input:checked + .attendance-slider:before {
+  transform: translateX(74px);
+}
+
+input:checked + .attendance-slider .text-present {
+  opacity: 1;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+input:checked + .attendance-slider .text-absent {
+  opacity: 0;
+}
+
+/* Status Badges */
+.badge-status {
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-status-present {
+  background-color: var(--color-present-bg);
+  color: var(--color-present-text);
+}
+
+.badge-status-absent {
+  background-color: var(--color-absent-bg);
+  color: var(--color-absent-text);
+}
+
+/* Toast System styling */
+.toast-container-custom {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1060;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast-custom {
+  background-color: var(--color-surface);
+  border-left: 4px solid var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  animation: slideInRight 0.3s ease;
+}
+
+.toast-custom.success {
+  border-left-color: var(--color-present-text);
+}
+
+.toast-custom.error {
+  border-left-color: var(--color-absent-text);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Student Avatar Initial Badge */
+.avatar-initial {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-surface-container-high);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Mobile Optimization Styles */
+@media (max-width: 576px) {
+  .table-custom td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+  .table-custom th {
+    padding: 10px 8px;
+    font-size: 10px;
+  }
+  .attendance-switch {
+    width: 90px;
+    height: 30px;
+  }
+  .attendance-slider {
+    padding: 0 8px;
+  }
+  .attendance-slider:before {
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+  }
+  input:checked + .attendance-slider:before {
+    transform: translateX(60px);
+  }
+  .attendance-slider .text-present, .attendance-slider .text-absent {
+    font-size: 9px;
+  }
+  .avatar-initial {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+  .card-custom {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .stat-card-value {
+    font-size: 22px;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
