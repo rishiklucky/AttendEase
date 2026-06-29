@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
+import { sendEmail } from '../utils/emailService.js';
 import User from '../models/User.js';
 import OtpToken from '../models/OtpToken.js';
 
@@ -12,16 +12,7 @@ const signToken = (id) => {
 
 // ─── Helper: Send OTP Email ──────────────────────────────────────────────────
 const sendOtpEmail = async (email, otp) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
-
-  await transporter.sendMail({
-    from: `"AttendEase" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+  await sendEmail({
     to: email,
     subject: 'AttendEase — Password Reset OTP',
     html: `

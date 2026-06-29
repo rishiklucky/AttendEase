@@ -3,7 +3,7 @@ import Student from '../models/Student.js';
 import { isMongoConnected } from '../config/db.js';
 import { studentsDb, attendanceDb } from './inMemoryDb.js';
 import xlsx from 'xlsx';
-import nodemailer from 'nodemailer';
+import { sendEmail } from '../utils/emailService.js';
 
 // @desc    Save/record attendance for a session
 // @route   POST /api/attendance
@@ -467,18 +467,10 @@ export const sendAttendanceReport = async (req, res) => {
       </div>
     `;
 
-    // 4. Send Email via nodemailer
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
-    const mailOptions = {
-      from: `"AttendEase Report" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
-      to: emails.join(', '),
+    // 4. Send Email via unified emailService (supports Resend or SMTP with timeouts)
+    await sendEmail({
+      fromDisplayName: 'AttendEase Report',
+      to: emails,
       subject: `AttendEase ${status} Report — ${date} (${session})`,
       html: emailHtml,
       attachments: [
@@ -487,9 +479,7 @@ export const sendAttendanceReport = async (req, res) => {
           content: buffer
         }
       ]
-    };
-
-    await transporter.sendMail(mailOptions);
+    });
 
     return res.status(200).json({
       success: true,
