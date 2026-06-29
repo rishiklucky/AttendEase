@@ -62,6 +62,53 @@ export const sendEmail = async ({ to, subject, html, attachments, fromDisplayNam
     return result;
   }
 
+  const brevoApiKey = process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.trim() : null;
+
+  if (brevoApiKey) {
+    console.log('Sending email via Brevo HTTP API...');
+    const brevoUrl = 'https://api.brevo.com/v3/smtp/email';
+    const recipientList = (Array.isArray(to) ? to : [to]).map(email => ({ email }));
+
+    // Format attachments for Brevo API
+    const brevoAttachments = (attachments || []).map(att => {
+      let contentBase64 = '';
+      if (Buffer.isBuffer(att.content)) {
+        contentBase64 = att.content.toString('base64');
+      } else if (typeof att.content === 'string') {
+        contentBase64 = att.content;
+      }
+      return {
+        content: contentBase64,
+        name: att.filename
+      };
+    });
+
+    const fromAddress = process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER;
+
+    const response = await fetch(brevoUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': brevoApiKey,
+        'accept': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: { name: fromName, email: fromAddress },
+        to: recipientList,
+        subject,
+        htmlContent: html,
+        attachment: brevoAttachments.length > 0 ? brevoAttachments : undefined
+      })
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+      console.error('Brevo API Error response:', result);
+      throw new Error(result.message || `Brevo API returned status ${response.status}`);
+    }
+    return result;
+  }
+
   // Fallback to Nodemailer SMTP
   console.log('Sending email via Nodemailer SMTP...');
   const transporter = nodemailer.createTransport({
