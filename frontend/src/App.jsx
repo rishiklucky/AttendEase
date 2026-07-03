@@ -10,6 +10,7 @@ import SendReportPage from './pages/SendReportPage';
 import LoginPage from './pages/LoginPage';
 import AdminRegisterPage from './pages/AdminRegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import Textpad from './pages/Textpad';
 
 // ── Auth-gated inner app ────────────────────────────────────────────────────
 function AppContent() {
@@ -69,6 +70,7 @@ function AuthenticatedApp() {
       case 'students': return <StudentManagement />;
       case 'history': return <HistoryModule />;
       case 'send-report': return <SendReportPage />;
+      case 'textpad': return <Textpad />;
       default: return <Dashboard setActivePage={setActivePage} />;
     }
   };

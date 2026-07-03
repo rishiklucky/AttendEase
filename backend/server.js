@@ -8,6 +8,7 @@ import connectDB from './config/db.js';
 import studentRoutes from './routes/studentRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import textpadRoutes from './routes/textpadRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +32,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/textpad', textpadRoutes);
 
 // Serve static frontend files in production
 const __filename = fileURLToPath(import.meta.url);
@@ -56,7 +58,7 @@ if (process.env.NODE_ENV === 'production') {
   }
 
   app.use(express.static(distPath));
-  
+
   // Serve the index.html for any other non-API routes (React/Vite SPA routing)
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) {

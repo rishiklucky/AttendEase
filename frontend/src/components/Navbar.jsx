@@ -10,7 +10,8 @@ const Navbar = ({ activePage, setActivePage }) => {
     { id: 'take-attendance', label: 'Take Attendance', icon: 'bi-check2-circle' },
     { id: 'students', label: 'Student Management', icon: 'bi-people-fill' },
     { id: 'history', label: 'Attendance History', icon: 'bi-calendar3' },
-    { id: 'send-report', label: 'Send Report', icon: 'bi-send-check' }
+    { id: 'send-report', label: 'Send Report', icon: 'bi-send-check' },
+    { id: 'textpad', label: 'Textpad', icon: 'bi-file-text' }
   ];
 
   const handleNavClick = (pageId) => {
@@ -22,8 +23,8 @@ const Navbar = ({ activePage, setActivePage }) => {
     <>
       {/* Mobile Top Navbar */}
       <header className="mobile-header d-md-none">
-        <button 
-          className="btn btn-link text-dark p-0" 
+        <button
+          className="btn btn-link text-dark p-0"
           onClick={() => setShowMobileSidebar(!showMobileSidebar)}
           aria-label="Toggle Navigation"
         >
@@ -35,8 +36,8 @@ const Navbar = ({ activePage, setActivePage }) => {
 
       {/* Sidebar Overlay for Mobile */}
       {showMobileSidebar && (
-        <div 
-          className="modal-backdrop fade show d-md-none" 
+        <div
+          className="modal-backdrop fade show d-md-none"
           onClick={() => setShowMobileSidebar(false)}
           style={{ zIndex: 990 }}
         ></div>
