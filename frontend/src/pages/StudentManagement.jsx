@@ -95,6 +95,46 @@ const StudentManagement = () => {
 
   // Calculate pages
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+
+  // Generate windowed page numbers to prevent overflow on mobile/small screens
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPageButtons = 5; // Limit pagination buttons to keep it compact
+    
+    if (totalPages <= maxPageButtons) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // Always include page 1
+      pageNumbers.push(1);
+      
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+      
+      if (currentPage <= 2) {
+        end = 4;
+      } else if (currentPage >= totalPages - 1) {
+        start = totalPages - 3;
+      }
+      
+      if (start > 2) {
+        pageNumbers.push('...');
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pageNumbers.push(i);
+      }
+      
+      if (end < totalPages - 1) {
+        pageNumbers.push('...');
+      }
+      
+      // Always include the last page
+      pageNumbers.push(totalPages);
+    }
+    return pageNumbers;
+  };
   
   useEffect(() => {
     // Reset to page 1 if filters change
@@ -305,11 +345,11 @@ const StudentManagement = () => {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                  <nav className="d-flex justify-content-between align-items-center mt-3">
-                    <span className="fs-7 text-muted">
+                  <nav className="d-flex flex-column flex-sm-row justify-content-center justify-content-sm-between align-items-center gap-3 mt-3">
+                    <span className="fs-7 text-muted text-center text-sm-start">
                       Showing page {currentPage} of {totalPages} ({filteredStudents.length} total students)
                     </span>
-                    <ul className="pagination pagination-sm m-0">
+                    <ul className="pagination pagination-sm m-0 flex-wrap justify-content-center">
                       <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                         <button
                           className="page-link"
@@ -318,13 +358,17 @@ const StudentManagement = () => {
                           Previous
                         </button>
                       </li>
-                      {[...Array(totalPages)].map((_, i) => (
-                        <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                      {getPageNumbers().map((page, i) => (
+                        <li 
+                          key={i} 
+                          className={`page-item ${currentPage === page ? 'active' : ''} ${page === '...' ? 'disabled' : ''}`}
+                        >
                           <button
                             className="page-link"
-                            onClick={() => setCurrentPage(i + 1)}
+                            onClick={() => typeof page === 'number' && setCurrentPage(page)}
+                            disabled={page === '...'}
                           >
-                            {i + 1}
+                            {page}
                           </button>
                         </li>
                       ))}
