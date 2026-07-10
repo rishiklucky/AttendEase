@@ -6,24 +6,25 @@ import { copyToClipboard } from '../utils/clipboard.js';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const HistoryModule = () => {
-  const { showToast, date: todayDate, session: todaySession, downloadExcel } = useAttendance();
+  const { showToast, date: todayDate, session: todaySession, downloadExcel, students } = useAttendance();
 
   // Selection states
   const [selectedDate, setSelectedDate] = useState(todayDate);
   const [selectedSession, setSelectedSession] = useState(todaySession);
-  
+
   // Data states
   const [records, setRecords] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   // Table search & filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [sectionFilter, setSectionFilter] = useState('');
-  
+
   // Edit mode states
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedGrid, setEditedGrid] = useState({}); // studentId -> status
+  const [isNewSession, setIsNewSession] = useState(false);
 
   // Detail modal states (present/absent popup like TakeAttendance)
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -39,16 +40,17 @@ const HistoryModule = () => {
     setLoading(true);
     setHasSearched(true);
     setIsEditMode(false);
+    setIsNewSession(false);
 
     try {
       const response = await axios.get(
         `${API_URL}/attendance/date/${selectedDate}/session/${selectedSession}`
       );
-      
+
       if (response.data.success) {
         const data = response.data.data;
         setRecords(data);
-        
+
         // Initialize the edited grid
         const grid = {};
         data.forEach((r) => {
@@ -57,7 +59,7 @@ const HistoryModule = () => {
           }
         });
         setEditedGrid(grid);
-        
+
         if (data.length === 0) {
           showToast('No attendance records found for this session.', 'info');
         } else {
@@ -99,6 +101,7 @@ const HistoryModule = () => {
       if (response.data.success) {
         showToast('Attendance history updated successfully.', 'success');
         setIsEditMode(false);
+        setIsNewSession(false);
         // Refresh
         await fetchHistory();
       }
@@ -112,15 +115,22 @@ const HistoryModule = () => {
 
   // Cancel edit mode
   const handleCancelEdit = () => {
-    // Reset edited grid to original record statuses
-    const grid = {};
-    records.forEach((r) => {
-      if (r.studentId) {
-        grid[r.studentId._id] = r.status;
-      }
-    });
-    setEditedGrid(grid);
-    setIsEditMode(false);
+    if (isNewSession) {
+      setRecords([]);
+      setEditedGrid({});
+      setIsEditMode(false);
+      setIsNewSession(false);
+    } else {
+      // Reset edited grid to original record statuses
+      const grid = {};
+      records.forEach((r) => {
+        if (r.studentId) {
+          grid[r.studentId._id] = r.status;
+        }
+      });
+      setEditedGrid(grid);
+      setIsEditMode(false);
+    }
   };
 
   // Filter records
@@ -131,24 +141,40 @@ const HistoryModule = () => {
     const sem = student.semesterId || '';
     const section = student.section || '';
 
-    const matchesSearch = 
+    const matchesSearch =
       name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       roll.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sem.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesSection = sectionFilter === '' || section === sectionFilter;
 
     return matchesSearch && matchesSection;
   });
 
+  // Toggle all statuses in Edit Mode
+  const allPresent = filteredRecords.length > 0 && filteredRecords.every(r => r.studentId && editedGrid[r.studentId._id] === 'Present');
+
+  const handleToggleAll = () => {
+    const nextStatus = allPresent ? 'Absent' : 'Present';
+    setEditedGrid(prev => {
+      const nextGrid = { ...prev };
+      filteredRecords.forEach(r => {
+        if (r.studentId) {
+          nextGrid[r.studentId._id] = nextStatus;
+        }
+      });
+      return nextGrid;
+    });
+  };
+
   // Calculate statistics based on current active statuses
   const displayGrid = isEditMode ? editedGrid : Object.fromEntries(records.map(r => [r.studentId?._id, r.status]));
   const displayRecordsList = records.filter(r => r.studentId);
   const totalCount = displayRecordsList.length;
-  
+
   const presentCount = displayRecordsList.filter((r) => displayGrid[r.studentId._id] === 'Present').length;
   const absentCount = displayRecordsList.filter((r) => displayGrid[r.studentId._id] === 'Absent').length;
-  
+
   const percentage = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
 
   // Extract sections from records for filter
@@ -175,7 +201,7 @@ const HistoryModule = () => {
               onChange={(e) => setSelectedDate(e.target.value)}
             />
           </div>
-          
+
           <div className="col-12 col-sm-4">
             <label className="form-label fs-7 fw-semibold">Select Session</label>
             <select
@@ -210,9 +236,37 @@ const HistoryModule = () => {
         <div className="card-custom py-5 text-center bg-white">
           <i className="bi bi-calendar-x text-muted fs-1 mb-3 d-block"></i>
           <h5 className="fw-semibold">No records found</h5>
-          <p className="text-muted fs-7 m-0">
+          <p className="text-muted fs-7 mb-4">
             There is no recorded attendance for <strong>{selectedDate}</strong> (<strong>{selectedSession}</strong>).
           </p>
+          <button
+            onClick={() => {
+              if (!students || students.length === 0) {
+                showToast('No students found. Please upload a student list first.', 'error');
+                return;
+              }
+              setIsNewSession(true);
+              setIsEditMode(true);
+
+              // Initialize records and edited grid
+              const initialRecords = students.map(student => ({
+                _id: `temp_${student._id}`,
+                studentId: student,
+                status: 'Present'
+              }));
+              setRecords(initialRecords);
+
+              const grid = {};
+              students.forEach(student => {
+                grid[student._id] = 'Present';
+              });
+              setEditedGrid(grid);
+            }}
+            className="btn btn-primary-custom px-4 py-2"
+          >
+            <i className="bi bi-calendar-plus me-2"></i>
+            Mark Attendance for this Session
+          </button>
         </div>
       )}
 
@@ -234,7 +288,7 @@ const HistoryModule = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  
+
                   <select
                     className="form-select w-auto"
                     value={sectionFilter}
@@ -247,32 +301,51 @@ const HistoryModule = () => {
                   </select>
                 </div>
 
-                <div className="d-flex gap-2">
-                  {!isEditMode ? (
-                    <button
-                      onClick={() => setIsEditMode(true)}
-                      className="btn btn-secondary-custom"
-                    >
-                      <i className="bi bi-pencil-square me-1"></i>
-                      Edit Records
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={handleCancelEdit}
-                        className="btn btn-secondary-custom text-danger"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleSaveChanges}
-                        className="btn btn-primary-custom bg-success border-success"
-                      >
-                        <i className="bi bi-check-lg me-1"></i>
-                        Save Changes
-                      </button>
-                    </>
+                <div className="d-flex align-items-center gap-3">
+                  {isEditMode && (
+                    <div className="d-flex align-items-center gap-2 border-end pe-3 me-1">
+                      <span className="fs-7 fw-semibold text-muted">Mark All:</span>
+                      <label className="attendance-switch">
+                        <input
+                          type="checkbox"
+                          checked={allPresent}
+                          onChange={handleToggleAll}
+                        />
+                        <span className="attendance-slider">
+                          <span className="text-present">Present</span>
+                          <span className="text-absent">Absent</span>
+                        </span>
+                      </label>
+                    </div>
                   )}
+
+                  <div className="d-flex gap-2">
+                    {!isEditMode ? (
+                      <button
+                        onClick={() => setIsEditMode(true)}
+                        className="btn btn-secondary-custom"
+                      >
+                        <i className="bi bi-pencil-square me-1"></i>
+                        Edit Records
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="btn btn-secondary-custom text-danger"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSaveChanges}
+                          className="btn btn-primary-custom bg-success border-success"
+                        >
+                          <i className="bi bi-check-lg me-1"></i>
+                          Save Changes
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -321,8 +394,8 @@ const HistoryModule = () => {
                                   onChange={() => handleToggle(student._id)}
                                 />
                                 <span className="attendance-slider">
-                                  <span className="text-present">Present ✅</span>
-                                  <span className="text-absent">Absent ❌</span>
+                                  <span className="text-present">Present</span>
+                                  <span className="text-absent">Absent</span>
                                 </span>
                               </label>
                             ) : (
@@ -348,7 +421,7 @@ const HistoryModule = () => {
           <div className="col-12 col-lg-4">
             <div className="card-custom">
               <h5 className="fw-bold mb-3 text-dark">Session Summary Stats</h5>
-              
+
               <div className="row g-3 text-center mb-4">
                 <div className="col-6">
                   <div className="border rounded p-3 bg-light">
@@ -369,7 +442,7 @@ const HistoryModule = () => {
                   <span className="fs-7 text-muted">Attendance Rate</span>
                   <span className="fs-7 fw-bold">{percentage}%</span>
                 </div>
-                
+
                 <div className="progress mb-3" style={{ height: '8px' }}>
                   <div
                     className="progress-bar bg-success"
