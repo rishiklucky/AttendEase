@@ -486,3 +486,132 @@ input:checked + .attendance-slider .text-absent {
   }
 }
 
+/* Calendar Styles */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-day-cell {
+  min-height: 85px;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid var(--color-outline);
+}
+
+.calendar-day-cell.other-month {
+  background-color: var(--color-background);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.4;
+  border-color: transparent;
+}
+
+.calendar-day-cell.marked-attendance {
+  background-color: var(--color-present-bg);
+  border-color: #c3e6cb;
+  color: var(--color-present-text);
+}
+
+.calendar-day-cell.marked-attendance:hover {
+  box-shadow: 0 4px 12px rgba(27, 122, 55, 0.18);
+  transform: translateY(-2px);
+}
+
+.calendar-day-cell.unmarked-attendance {
+  background-color: var(--color-absent-bg);
+  border-color: #f5c2c2;
+  color: var(--color-absent-text);
+}
+
+.calendar-day-cell.unmarked-attendance:hover {
+  box-shadow: 0 4px 12px rgba(197, 34, 31, 0.18);
+  transform: translateY(-2px);
+}
+
+.badge-session-indicator {
+  font-size: 10px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.badge-session-indicator.active {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.badge-session-indicator.inactive {
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-outline);
+  opacity: 0.6;
+}
+
+@media (max-width: 576px) {
+  .calendar-day-cell {
+    min-height: 60px;
+    padding: 6px;
+  }
+  .calendar-day-cell .fw-bold {
+    font-size: 12px;
+  }
+  .badge-session-indicator {
+    width: 15px;
+    height: 15px;
+    font-size: 8px;
+  }
+  .calendar-grid {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 400px) {
+  .calendar-day-cell {
+    min-height: 50px;
+    padding: 4px;
+  }
+  .calendar-day-cell .fw-bold {
+    font-size: 11px;
+  }
+  .badge-session-indicator {
+    width: 12px;
+    height: 12px;
+    font-size: 7px;
+  }
+  .calendar-grid {
+    gap: 2px;
+  }
+}
+
+.legend-divider {
+  border-left: none;
+  padding-left: 0;
+}
+
+@media (min-width: 576px) {
+  .legend-divider {
+    border-left: 1px solid var(--color-outline);
+    padding-left: 16px;
+  }
+}
+
+/* Font Size Helpers */
+.fs-7 {
+  font-size: 0.825rem !important;
+}
+.fs-8 {
+  font-size: 0.725rem !important;
+}
+

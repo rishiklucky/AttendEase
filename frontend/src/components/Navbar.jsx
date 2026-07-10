@@ -10,6 +10,7 @@ const Navbar = ({ activePage, setActivePage }) => {
     { id: 'take-attendance', label: 'Take Attendance', icon: 'bi-check2-circle' },
     { id: 'students', label: 'Student Management', icon: 'bi-people-fill' },
     { id: 'history', label: 'Attendance History', icon: 'bi-calendar3' },
+    { id: 'calendar', label: 'Calendar View', icon: 'bi-calendar-event' },
     { id: 'send-report', label: 'Send Report', icon: 'bi-send-check' },
     { id: 'textpad', label: 'Textpad', icon: 'bi-file-text' }
   ];

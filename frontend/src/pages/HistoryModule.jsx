@@ -9,8 +9,12 @@ const HistoryModule = () => {
   const { showToast, date: todayDate, session: todaySession, downloadExcel, students } = useAttendance();
 
   // Selection states
-  const [selectedDate, setSelectedDate] = useState(todayDate);
-  const [selectedSession, setSelectedSession] = useState(todaySession);
+  const [selectedDate, setSelectedDate] = useState(() => {
+    return sessionStorage.getItem('selectedHistoryDate') || todayDate;
+  });
+  const [selectedSession, setSelectedSession] = useState(() => {
+    return sessionStorage.getItem('selectedHistorySession') || todaySession;
+  });
 
   // Data states
   const [records, setRecords] = useState([]);
@@ -73,6 +77,17 @@ const HistoryModule = () => {
       setLoading(false);
     }
   };
+
+  // Auto-fetch if redirected from Calendar page
+  useEffect(() => {
+    const savedDate = sessionStorage.getItem('selectedHistoryDate');
+    if (savedDate) {
+      // Clear values from storage
+      sessionStorage.removeItem('selectedHistoryDate');
+      sessionStorage.removeItem('selectedHistorySession');
+      fetchHistory();
+    }
+  }, []);
 
   // Toggle status inside Edit Mode
   const handleToggle = (studentId) => {

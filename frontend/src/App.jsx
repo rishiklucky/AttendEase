@@ -11,6 +11,7 @@ import LoginPage from './pages/LoginPage';
 import AdminRegisterPage from './pages/AdminRegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import Textpad from './pages/Textpad';
+import CalendarModule from './pages/CalendarModule';
 
 // ── Auth-gated inner app ────────────────────────────────────────────────────
 function AppContent() {
@@ -69,6 +70,7 @@ function AuthenticatedApp() {
       case 'take-attendance': return <TakeAttendance />;
       case 'students': return <StudentManagement />;
       case 'history': return <HistoryModule />;
+      case 'calendar': return <CalendarModule setActivePage={setActivePage} />;
       case 'send-report': return <SendReportPage />;
       case 'textpad': return <Textpad />;
       default: return <Dashboard setActivePage={setActivePage} />;
