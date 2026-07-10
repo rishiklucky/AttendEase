@@ -301,9 +301,9 @@ const HistoryModule = () => {
                   </select>
                 </div>
 
-                <div className="d-flex align-items-center gap-3">
+                <div className={isEditMode ? "edit-actions-wrapper" : "d-flex gap-2"}>
                   {isEditMode && (
-                    <div className="d-flex align-items-center gap-2 border-end pe-3 me-1">
+                    <div className="mark-all-container">
                       <span className="fs-7 fw-semibold text-muted">Mark All:</span>
                       <label className="attendance-switch">
                         <input
@@ -319,33 +319,31 @@ const HistoryModule = () => {
                     </div>
                   )}
 
-                  <div className="d-flex gap-2">
-                    {!isEditMode ? (
+                  {isEditMode ? (
+                    <div className="d-flex gap-2 ms-auto ms-sm-0">
                       <button
-                        onClick={() => setIsEditMode(true)}
-                        className="btn btn-secondary-custom"
+                        onClick={handleCancelEdit}
+                        className="btn btn-secondary-custom text-danger"
                       >
-                        <i className="bi bi-pencil-square me-1"></i>
-                        Edit Records
+                        Cancel
                       </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={handleCancelEdit}
-                          className="btn btn-secondary-custom text-danger"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={handleSaveChanges}
-                          className="btn btn-primary-custom bg-success border-success"
-                        >
-                          <i className="bi bi-check-lg me-1"></i>
-                          Save Changes
-                        </button>
-                      </>
-                    )}
-                  </div>
+                      <button
+                        onClick={handleSaveChanges}
+                        className="btn btn-primary-custom bg-success border-success"
+                      >
+                        <i className="bi bi-check-lg me-1"></i>
+                        Save Changes
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsEditMode(true)}
+                      className="btn btn-secondary-custom"
+                    >
+                      <i className="bi bi-pencil-square me-1"></i>
+                      Edit Records
+                    </button>
+                  )}
                 </div>
               </div>
 
