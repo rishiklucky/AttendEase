@@ -122,7 +122,7 @@ const CalendarModule = ({ setActivePage }) => {
       {/* Page Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h2 className="fw-bold text-dark mb-1">Calendar Module</h2>
+          <h2 className="fw-bold text-dark mb-1">Calendar</h2>
           <p className="text-muted fs-7 mb-0">Visual summary of attendance records across the calendar month</p>
         </div>
       </div>
@@ -136,7 +136,7 @@ const CalendarModule = ({ setActivePage }) => {
               {monthNames[month]} {year}
             </h4>
           </div>
-          
+
           <div className="d-flex gap-2">
             <button onClick={handleToday} className="btn btn-secondary-custom btn-sm py-1.5 px-3">
               Today
@@ -214,7 +214,7 @@ const CalendarModule = ({ setActivePage }) => {
                     title={day.isCurrentMonth ? (hasAttendance ? `Click to view records for ${day.dateString}` : `Click to record attendance for ${day.dateString}`) : ''}
                   >
                     <div className="fw-bold fs-6">{day.dayNum}</div>
-                    
+
                     {day.isCurrentMonth && (
                       <div className="d-flex gap-1 mt-2 justify-content-center">
                         <span className={`badge-session-indicator ${hasMorning ? 'active' : 'inactive'}`}>
