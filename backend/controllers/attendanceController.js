@@ -5,6 +5,23 @@ import { studentsDb, attendanceDb } from './inMemoryDb.js';
 import xlsx from 'xlsx';
 import { sendEmail } from '../utils/emailService.js';
 
+// Helper function to sort attendance records by Student's Semester ID, then Roll Number
+const sortRecordsBySemesterId = (records) => {
+  return records.sort((a, b) => {
+    const studentA = a.studentId || {};
+    const studentB = b.studentId || {};
+    
+    const semA = studentA.semesterId || '';
+    const semB = studentB.semesterId || '';
+    const semCompare = semA.localeCompare(semB, undefined, { numeric: true, sensitivity: 'base' });
+    if (semCompare !== 0) return semCompare;
+
+    const rollA = studentA.rollNo || '';
+    const rollB = studentB.rollNo || '';
+    return rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
+  });
+};
+
 // @desc    Save/record attendance for a session
 // @route   POST /api/attendance
 // @access  Public
@@ -174,11 +191,13 @@ export const getAttendanceByDateSession = async (req, res) => {
         const student = studentsDb.find((s) => s._id === r.studentId) || null;
         return { ...r, studentId: student };
       });
+      sortRecordsBySemesterId(populated);
       return res.status(200).json({ success: true, data: populated });
     }
 
     // MongoDB Implementation
     const records = await Attendance.find({ date, session }).populate('studentId');
+    sortRecordsBySemesterId(records);
     return res.status(200).json({ success: true, data: records });
   } catch (error) {
     console.error('Get Attendance by Date/Session Error:', error);
@@ -286,6 +305,7 @@ const generateExcelFile = async (req, res, targetStatus) => {
         };
       });
     }
+    sortRecordsBySemesterId(records);
     if (records.length === 0) {
       res.setHeader('Content-Type', 'text/html');
       return res.status(404).send(`
@@ -385,6 +405,7 @@ export const sendAttendanceReport = async (req, res) => {
         };
       });
     }
+    sortRecordsBySemesterId(records);
 
     // Filter by section if specified (excluding 'All')
     if (section && section !== 'All') {

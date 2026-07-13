@@ -53,6 +53,22 @@ const HistoryModule = () => {
 
       if (response.data.success) {
         const data = response.data.data;
+
+        // Sort records by Student's Semester ID, then Roll Number
+        data.sort((a, b) => {
+          const studentA = a.studentId || {};
+          const studentB = b.studentId || {};
+          
+          const semA = studentA.semesterId || '';
+          const semB = studentB.semesterId || '';
+          const semCompare = semA.localeCompare(semB, undefined, { numeric: true, sensitivity: 'base' });
+          if (semCompare !== 0) return semCompare;
+
+          const rollA = studentA.rollNo || '';
+          const rollB = studentB.rollNo || '';
+          return rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
         setRecords(data);
 
         // Initialize the edited grid
@@ -263,8 +279,19 @@ const HistoryModule = () => {
               setIsNewSession(true);
               setIsEditMode(true);
 
-              // Initialize records and edited grid
-              const initialRecords = students.map(student => ({
+              // Initialize records and edited grid, sorted by semesterId and rollNo
+              const sortedTempStudents = [...students].sort((a, b) => {
+                const semA = a.semesterId || '';
+                const semB = b.semesterId || '';
+                const semCompare = semA.localeCompare(semB, undefined, { numeric: true, sensitivity: 'base' });
+                if (semCompare !== 0) return semCompare;
+
+                const rollA = a.rollNo || '';
+                const rollB = b.rollNo || '';
+                return rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
+              });
+
+              const initialRecords = sortedTempStudents.map(student => ({
                 _id: `temp_${student._id}`,
                 studentId: student,
                 status: 'Present'
@@ -272,7 +299,7 @@ const HistoryModule = () => {
               setRecords(initialRecords);
 
               const grid = {};
-              students.forEach(student => {
+              sortedTempStudents.forEach(student => {
                 grid[student._id] = 'Present';
               });
               setEditedGrid(grid);
